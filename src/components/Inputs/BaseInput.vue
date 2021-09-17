@@ -28,6 +28,7 @@
             v-bind="$attrs"
             :valid="valid"
             :required="required"
+            :name="name"
             class="form-control"
             :class="[{'is-valid': valid && validated && successMessage}, {'is-invalid': invalid && validated}, inputClasses]">
         </slot>

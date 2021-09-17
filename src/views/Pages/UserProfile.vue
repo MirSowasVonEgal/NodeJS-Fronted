@@ -1,46 +1,166 @@
 <template>
   <div>
-    <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center profile-header"
-        style="min-height: 600px; background-image: url(img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
-      <b-container fluid>
-        <!-- Mask -->
-        <span class="mask bg-gradient-success opacity-8"></span>
-        <!-- Header container -->
-        <b-container fluid class="d-flex align-items-center">
-          <b-row >
-            <b-col lg="7" md="10">
-              <h1 class="display-2 text-white">Hello Jesse</h1>
-              <p class="text-white mt-0 mb-5">This is your profile page. You can see the progress you've made with your
-                work and manage your projects or assigned tasks</p>
-              <a href="#!" class="btn btn-info">Edit profile</a>
-            </b-col>
-          </b-row>
-        </b-container>
-      </b-container>
-    </div>
+     <base-header class="pb-6 pb-8 pt-5 pt-md-8 bg-gradient-success">
+      <dashboard-stats/>
+     </base-header>
 
     <b-container fluid class="mt--6">
       <b-row>
-        <b-col xl="4" class="order-xl-2 mb-5">
-          <user-card></user-card>
-        </b-col>
-        <b-col xl="8" class="order-xl-1">
-          <edit-profile-form></edit-profile-form>
+        <b-col xl="12" class="order-xl-1">
+          <card>
+          <b-row align-v="center" slot="header" >
+            <b-col cols="8">
+              <h3 class="mb-0">Profil bearbeiten</h3>
+            </b-col>
+            <b-col cols="4" class="text-right">
+              <a href="#!" class="btn btn-sm btn-primary">Speichern</a>
+            </b-col>
+          </b-row>
+
+          <b-form @submit.prevent="updateProfile">
+            <h6 class="heading-small text-muted mb-4">Account Informationen</h6>
+
+              <div class="pl-lg-4">
+                <b-row>
+                  <b-col lg="6">
+                    <base-input
+                      type="text"
+                      label="Nutzername"
+                      placeholder="Dein Nutzername"
+                      v-model="user.username"
+                      disabled
+                    >
+                    </base-input>
+                  </b-col>
+                  <b-col lg="6">
+                    <base-input
+                      type="email"
+                      label="E-Mail Adresse"
+                      placeholder="Deine E-Mail"
+                      v-model="user.email"
+                      disabled
+                    >
+                    </base-input>
+                  </b-col>
+                </b-row>
+                <b-row >
+                  <b-col lg="6">
+                    <base-input
+                      type="text"
+                      label="Vorname"
+                      placeholder="Max"
+                      v-model="user.firstName"
+                      name="firstname"
+                    >
+                    </base-input>
+                  </b-col>
+                  <b-col lg="6">
+                    <base-input
+                      type="text"
+                      label="Nachname"
+                      placeholder="Mustermann"
+                      v-model="user.lastName"
+                      name="lastname"
+                    >
+                    </base-input>
+                  </b-col>
+                </b-row>
+              </div>
+              <hr class="my-4">
+
+              <!-- Address -->
+              <h6 class="heading-small text-muted mb-4">Kontakt Informationen</h6>
+
+              <div class="pl-lg-4">
+                <b-row>
+                  <b-col md="10">
+                    <base-input
+                      type="text"
+                      label="Straße"
+                      placeholder="Mustermann Straße"
+                      v-model="user.address"
+                      name="street"
+                    >
+                    </base-input>
+                  </b-col>
+                   <b-col md="2">
+                    <base-input
+                      type="text"
+                      label="Hausnummer"
+                      placeholder="5"
+                      v-model="user.housenumber"
+                      name="housenumber"
+                    >
+                    </base-input>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col lg="4">
+                    <base-input
+                      type="text"
+                      label="Stadt"
+                      placeholder="Mönchengladbach"
+                      v-model="user.city"
+                      name="city"
+                    >
+                    </base-input>
+                  </b-col>
+                  <b-col lg="4">
+                    <base-input
+                      type="text"
+                      label="Land"
+                      placeholder="Deutschland"
+                      v-model="user.country"
+                      name="country"
+                    >
+                    </base-input>
+                  </b-col>
+                  <b-col lg="4">
+                    <base-input
+                      label="Postleitzahl"
+                      placeholder="123456"
+                      v-model="user.postalCode"
+                      name="zipcode"
+                    >
+                    </base-input>
+                  </b-col>
+                </b-row>
+              </div>
+            </b-form>
+          </card>
         </b-col>
       </b-row>
     </b-container>
   </div>
 </template>
-<script>
-  import EditProfileForm from './UserProfile/EditProfileForm.vue';
-  import UserCard from './UserProfile/UserCard.vue';
 
-  export default {
-    components: {
-      EditProfileForm,
-      UserCard
+<script>
+import DashboardStats from '../Layout/DashboardStats.vue';
+
+export default {
+  components: { DashboardStats },
+  data() {
+    return {
+      user: {
+        company: '',
+        username: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        address: '',
+        city: '',
+        country: '',
+        postalCode: '',
+        aboutMe: ``
+      }
+    };
+  },
+  methods: {
+    updateProfile() {
+      alert('Your data: ' + JSON.stringify(this.user));
     }
-  };
+  }
+};
 </script>
 <style>
 </style>

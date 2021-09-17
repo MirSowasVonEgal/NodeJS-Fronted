@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*!
 
 =========================================================
@@ -16,12 +17,19 @@
 */
 import Vue from 'vue';
 import DashboardPlugin from './plugins/dashboard-plugin';
+import VueTimeLine from "@growthbunker/vuetimeline";
+import VueElementLoading from 'vue-element-loading'
 import App from './App.vue';
 
 // router setup
 import router from './routes/router';
 // plugin setup
+Vue.component('VueElementLoading', VueElementLoading)
 Vue.use(DashboardPlugin);
+Vue.use(VueTimeLine, {
+  // Specify the theme to use: dark or light (dark by default).
+  theme: "light",
+});
 
 /* eslint-disable no-new */
 new Vue({

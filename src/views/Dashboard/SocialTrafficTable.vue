@@ -1,5 +1,5 @@
 <template>
-  <b-card body-class="p-0" header-class="border-0">
+  <card body-class="p-0" header-class="border-0">
     <template v-slot:header>
       <b-row align-v="center">
         <b-col>
@@ -34,7 +34,7 @@
         </template>
       </el-table-column>
     </el-table>
-  </b-card>
+  </card>
 </template>
 <script>
   import { BaseProgress } from '@/components';

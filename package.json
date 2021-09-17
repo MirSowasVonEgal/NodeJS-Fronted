@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --open",
+    "serve": "vue-cli-service serve --open --skip-plugins @vue/cli-plugin-eslint",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dev": "npm run serve"
   },
   "dependencies": {
+    "@growthbunker/vuetimeline": "^0.1.17",
     "bootstrap": "4.3.1",
     "bootstrap-vue": "^2.5.0",
     "chart.js": "^2.9.3",
@@ -30,16 +31,18 @@
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.0",
     "vue-clipboard2": "^0.3.0",
+    "vue-element-loading": "^2.0.2",
     "vue-flatpickr-component": "^8.1.2",
     "vue-router": "^3.0.6",
     "vue2-transitions": "^0.2.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.7.0",
-    "@vue/cli-plugin-eslint": "^3.7.0",
     "@vue/cli-service": "^4.5.13",
-    "@vue/eslint-config-prettier": "^4.0.1",
+    "@vue/devtools": "^5.3.4",
     "babel-plugin-component": "^1.1.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^7.17.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.6.11"
   },

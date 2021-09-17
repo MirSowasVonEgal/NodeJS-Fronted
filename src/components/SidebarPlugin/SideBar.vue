@@ -6,57 +6,57 @@
             <navbar-toggle-button @click.native="showSidebar">
                 
             </navbar-toggle-button>
-            <router-link class="navbar-brand" to="/">
-                <img :src="logo" class="navbar-brand-img" alt="...">
-            </router-link>
+            <center><router-link to="/" custom v-slot="{ navigate }">
+                <a href="/"><img style="width: 100px; height: 100px;" @click="navigate" @keypress.enter="navigate" role="link" src="img/brand/green.png"></a>
+            </router-link></center>
 
             <slot name="mobile-right">
                 <ul class="nav align-items-center d-md-none">
-                    <base-dropdown class="nav-item" menu-on-right tag="li" title-tag="a">
-                        <a slot="title-container" class="nav-link nav-link-icon" href="#" role="button"
-                           aria-haspopup="true" aria-expanded="false">
-                            <i class="ni ni-bell-55"></i>
-                        </a>
-
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </base-dropdown>
-                    <base-dropdown class="nav-item" menu-on-right tag="li" title-tag="a">
-                        <a slot="title-container" class="nav-link" href="#" role="button">
-                            <div class="media align-items-center">
+                    <base-dropdown menu-on-right
+                                class="nav-item"
+                                tag="li"
+                                title-tag="a"
+                                title-classes="nav-link pr-0">
+                    <a href="#" class="nav-link pr-0" @click.prevent slot="title-container">
+                      <b-media no-body class="align-items-center">
                               <span class="avatar avatar-sm rounded-circle">
-                                <img alt="Image placeholder" src="img/theme/team-1.jpg">
+                                <img alt="Image placeholder" src="https://secure.gravatar.com/avatar/39d5218c0db52fc8b11529916cdf298d?size=80">
                               </span>
-                            </div>
-                        </a>
+                        <b-media-body class="ml-2 d-none d-lg-block">
+                          <span class="mb-0 text-sm  font-weight-bold">Nutzername</span>
+                        </b-media-body>
+                      </b-media>
+                    </a>
 
-                        <div class=" dropdown-header noti-title">
-                            <h6 class="text-overflow m-0">Welcome!</h6>
-                        </div>
-                        <router-link to="/profile" class="dropdown-item">
-                            <i class="ni ni-single-02"></i>
-                            <span>My profile</span>
-                        </router-link>
-                        <router-link to="/profile" class="dropdown-item">
-                            <i class="ni ni-settings-gear-65"></i>
-                            <span>Settings</span>
-                        </router-link>
-                        <router-link to="/profile" class="dropdown-item">
-                            <i class="ni ni-calendar-grid-58"></i>
-                            <span>Activity</span>
-                        </router-link>
-                        <router-link to="/profile" class="dropdown-item">
-                            <i class="ni ni-support-16"></i>
-                            <span>Support</span>
-                        </router-link>
-                        <div class="dropdown-divider"></div>
-                        <a href="#!" class="dropdown-item">
-                            <i class="ni ni-user-run"></i>
-                            <span>Logout</span>
-                        </a>
-                    </base-dropdown>
+                    <template>
+
+                      <b-dropdown-header class="noti-title">
+                        <h6 class="text-overflow m-0">Willkommen!</h6>
+                      </b-dropdown-header>
+                      <b-dropdown-item href="#!">
+                        <i class="ni ni-single-02"></i>
+                        <span>Mein Profil</span>
+                      </b-dropdown-item>
+                      <b-dropdown-item href="#!">
+                        <i class="ni ni-lock-circle-open"></i>
+                        <span>Passwort ändern</span>
+                      </b-dropdown-item>
+                      <b-dropdown-item href="#!">
+                        <i class="ni ni-money-coins"></i>
+                        <span>Guthaben aufladen</span>
+                      </b-dropdown-item>
+                      <b-dropdown-item href="#!">
+                        <i class="ni ni-support-16"></i>
+                        <span>Deine Tickets</span>
+                      </b-dropdown-item>
+                      <div class="dropdown-divider"></div>
+                      <b-dropdown-item href="#!">
+                        <i class="ni ni-user-run"></i>
+                        <span>Ausloggen</span>
+                      </b-dropdown-item>
+
+                    </template>
+                  </base-dropdown>
                 </ul>
             </slot>
             <slot></slot>
@@ -77,33 +77,82 @@
 
                 <ul class="navbar-nav">
                     <slot name="links">
+                      <sidebar-item
+                        :link="{
+                          name: 'Dashboard',
+                          path: '/dashboard',
+                          icon: 'ni ni-tv-2 text-primary',
+                        }"
+                      >
+                      </sidebar-item>
                     </slot>
                 </ul>
-                <!--Divider-->
                 <hr class="my-3">
-                <!--Heading-->
-                <h6 class="navbar-heading text-muted">Documentation</h6>
-                <!--Navigation-->
-                <ul class="navbar-nav mb-md-3">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="https://www.creative-tim.com/learning-lab/bootstrap-vue/alerts/argon-dashboard">
-                            <i class="ni ni-spaceship"></i> Getting started
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="https://www.creative-tim.com/learning-lab/bootstrap-vue/colors/argon-dashboard">
-                            <i class="ni ni-palette"></i> Foundation
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="https://www.creative-tim.com/learning-lab/bootstrap-vue/alerts/argon-dashboard">
-                            <i class="ni ni-ui-04"></i> Components
-                        </a>
-                    </li>
+                <h6 class="navbar-heading text-muted">Produkte</h6>
+                   <ul class="navbar-nav mb-md-1">
+                    <sidebar-item
+                        :link="{
+                          name: 'Meine Produkte',
+                          path: '/products',
+                          icon: 'ni ni-app text-green',
+                        }"
+                      >
+                      </sidebar-item>
+                    <sidebar-item
+                        :link="{
+                          name: 'RootServer',
+                          path: '/rootserver',
+                          icon: 'fa fa-server text-blue',
+                        }"
+                      >
+                      </sidebar-item>
+                    <sidebar-item
+                        :link="{
+                          name: 'vServer',
+                          path: '/vserver',
+                          icon: 'fas fa-hdd text-warning',
+                        }"
+                      >
+                      </sidebar-item>
                 </ul>
+                
+                <hr class="my-2">
+                <h6 class="navbar-heading text-muted">Account</h6>
+                   <ul class="navbar-nav mb-md-3">
+                    <sidebar-item
+                        :link="{
+                          name: 'Mein Profil',
+                          path: '/profile',
+                          icon: 'ni ni-single-02 text-info',
+                        }"
+                      >
+                      </sidebar-item>
+                    <sidebar-item
+                        :link="{
+                          name: 'Ticket',
+                          path: '/ticket',
+                          icon: 'ni ni-support-16 text-yellow',
+                        }"
+                      >
+                      </sidebar-item>
+                      <sidebar-item
+                        :link="{
+                          name: 'Guthaben aufladen',
+                          path: '/charge',
+                          icon: 'ni ni-money-coins text-danger',
+                        }"
+                      >
+                      </sidebar-item>
+                    <sidebar-item
+                        :link="{
+                          name: 'Transaktionen',
+                          path: '/transactions',
+                          icon: 'fas fa-book text-purple',
+                        }"
+                      >
+                      </sidebar-item>
+                </ul>
+                
             </div>
             </div>
     </nav>

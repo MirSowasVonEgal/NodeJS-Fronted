@@ -28,15 +28,26 @@ const routes = [
         component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/UserProfile.vue')
       },
       {
-        path: '/maps',
-        name: 'maps',
-        component: () => import(/* webpackChunkName: "demo" */ '../views/GoogleMaps.vue')
+        path: '/charge',
+        name: 'charge',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Charge.vue')
+      },
+      {
+        path: '/transactions',
+        name: 'transactions',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Transactions.vue')
       },
       {
         path: '/tables',
         name: 'tables',
         component: () => import(/* webpackChunkName: "demo" */ '../views/RegularTables.vue')
-      }
+      },
+      {
+        path: '/rootserver',
+        name: 'rootserver',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/RootServer/OrderRootServer.vue')
+      },
+      { path: '/ticket', redirect: '/tickets' }
     ]
   },
   {
