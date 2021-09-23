@@ -29,7 +29,7 @@
                     <img alt="Image placeholder" src="https://secure.gravatar.com/avatar/39d5218c0db52fc8b11529916cdf298d?size=80">
                   </span>
             <b-media-body class="ml-2 d-none d-lg-block">
-              <span class="mb-0 text-sm  font-weight-bold">Nutzername</span>
+              <span class="mb-0 text-sm  font-weight-bold">{{ user.username }}</span>
             </b-media-body>
           </b-media>
         </a>
@@ -42,7 +42,7 @@
           <router-link to="/profile" custom v-slot="{ navigate }" role="menuitem">
                 <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-single-02"></i> <span>Mein Profil</span></li>
           </router-link>
-           <router-link to="/resetpassword" custom v-slot="{ navigate }" role="menuitem">
+           <router-link to="/profile" custom v-slot="{ navigate }" role="menuitem">
                 <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-lock-circle-open"></i> <span>Passwort ändern</span></li>
           </router-link>
            <router-link to="/charge" custom v-slot="{ navigate }" role="menuitem">
@@ -52,9 +52,7 @@
                 <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-support-16"></i> <span>Deine Tickets</span></li>
           </router-link>
           <div class="dropdown-divider"></div>
-           <router-link to="/logout" custom v-slot="{ navigate }" role="menuitem">
-                <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-user-run"></i> <span>Ausloggen</span></li>
-          </router-link>
+                <li class="dropdown-item" @click="$store.dispatch('auth/logout') && $awn.success('Du wurdest abgemeldet!')" role="link"> <i class="ni ni-user-run"></i> <span>Ausloggen</span></li>
 
         </template>
         
@@ -66,6 +64,7 @@
 <script>
 import { CollapseTransition } from 'vue2-transitions';
 import { BaseNav, Modal } from '@/components';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -84,7 +83,8 @@ export default {
     routeName() {
       const { name } = this.$route;
       return this.capitalizeFirstLetter(name);
-    }
+    },
+    ...mapGetters({ user: "auth/getUser" })
   },
   data() {
     return {

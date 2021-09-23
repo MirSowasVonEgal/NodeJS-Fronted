@@ -4,7 +4,7 @@
         <b-col xl="3" md="6">
           <stats-card title="Rang"
                       type="gradient-green"
-                      sub-title="Customer"
+                      :sub-title="user.role.fullname"
                       icon="ni ni-single-02"
                       class="mb-4">
 
@@ -16,19 +16,22 @@
         <b-col xl="3" md="6" >
           <stats-card title="Guthaben"
                       type="gradient-orange"
-                      sub-title="0€"
+                      :sub-title="user.balance.toFixed(2) +'€'"
                       icon="ni ni-money-coins"
                       class="mb-4">
 
             <template slot="footer">
-              <span class="text-nowrap">Klicke <router-link :to="{ path: 'charge' }">hier</router-link>, um dein Guthaben aufzuladen.</span>
+              <span class="text-nowrap">Klicke 
+              <router-link to="/charge" custom v-slot="{ navigate }">
+                <a href="" @click="navigate" @keypress.enter="navigate" role="link"><span>hier</span></a>
+            </router-link>, um dein Guthaben aufzuladen.</span>
             </template>
           </stats-card>
         </b-col>
         <b-col xl="3" md="6">
           <stats-card title="Letzter Login"
                       type="gradient-red"
-                      sub-title="XX.XX.XXXX XX:XX"
+                      :sub-title="new Date(Number(user.last_login)) | moment('DD.MM.YYYY, HH:mm')"
                       icon="ni ni-chart-pie-35"
                       class="mb-4">
 
@@ -41,7 +44,7 @@
         <b-col xl="3" md="6">
           <stats-card title="Support Pin"
                       type="gradient-info"
-                      sub-title="XXXX-XXXX"
+                      :sub-title="user.supportid"
                       icon="ni ni-support-16"
                       class="mb-4">
 
@@ -54,8 +57,33 @@
 </template>
 
 <script>
-export default {
+import AuthService from '../../services/AuthService'
+import { mapGetters } from 'vuex';
 
+export default {
+  data () {
+    return {
+      timeout: null
+    }
+  },
+  computed: {
+    ...mapGetters({ user: "auth/getUser" })
+  },
+  mounted() {
+    const vm = this
+      function timeout() {
+        vm.timeout = setTimeout(() => {
+          AuthService.getProfile().then(user => {
+            vm.$store.dispatch("auth/user", user);
+            timeout();
+          })
+        }, 2000);
+      }
+      timeout();
+  },
+  beforeDestroy () {
+    clearTimeout(this.timeout);
+  }
 }
 </script>
 

@@ -32,7 +32,7 @@
                   <span class="btn-inner--icon"><img src="img/icons/common/github.svg"></span>
                   <span class="btn-inner--text">Github</span>
                 </a>-->
-                <a href="#" class="btn btn-neutral btn-icon">
+                <a :href="googleurl" class="btn btn-neutral btn-icon">
                   <span class="btn-inner--icon"><img src="img/icons/common/google.svg"></span>
                   <span class="btn-inner--text">Google</span>
                 </a>
@@ -43,14 +43,14 @@
                 <small>Oder mit Zugangsdaten einloggen</small>
               </div>
               <validation-observer v-slot="{handleSubmit}" ref="formValidator">
-                <b-form role="form" @submit.prevent="handleSubmit(onSubmit)">
+                <b-form role="form" @submit.prevent="handleSubmit(loginUser)">
                   <base-input alternative
                               class="mb-3"
                               name="E-Mail"
                               :rules="{required: true, email: true}"
                               prepend-icon="ni ni-email-83"
                               placeholder="E-Mail"
-                              v-model="model.email">
+                              v-model="email">
                   </base-input>
 
                   <base-input alternative
@@ -60,10 +60,10 @@
                               prepend-icon="ni ni-lock-circle-open"
                               type="password"
                               placeholder="Passwort"
-                              v-model="model.password">
+                              v-model="password">
                   </base-input>
 
-                  <b-form-checkbox v-model="model.rememberMe">Remember me</b-form-checkbox>
+                  <b-form-checkbox v-model="rememberMe">Remember me</b-form-checkbox>
                   <div class="text-center">
                     <base-button type="primary" native-type="submit" class="my-4">Einloggen</base-button>
                   </div>
@@ -73,7 +73,7 @@
           </b-card>
           <b-row class="mt-3">
             <b-col cols="6">
-              <router-link to="/dashboard" class="text-light"><small>Passwort vergessen?</small></router-link>
+              <router-link to="/resetpassword" class="text-light"><small>Passwort vergessen?</small></router-link>
             </b-col>
             <b-col cols="6" class="text-right">
               <router-link to="/register" class="text-light"><small>Du hast noch keinen Account?</small></router-link>
@@ -85,19 +85,68 @@
   </div>
 </template>
 <script>
-  export default {
+import AuthService from '../../services/AuthService'
+
+export default {
     data() {
       return {
-        model: {
           email: '',
           password: '',
-          rememberMe: false
-        }
+          rememberMe: false,
+          googleurl: '#',
       };
     },
+    created: function() {
+      if(this.$route.query.code) {
+        let notifier = this.$awn;
+        notifier.async(
+          AuthService.getGoogleCallback(this.$route.query.code),
+          response => { 
+            notifier.success(response.message);
+            const token = response.token;
+            const user = response.user;
+
+            this.$store.dispatch('auth/login', { token, user });
+            this.$router.push('/');
+          }, error => { notifier.alert(error.response.data.response.message) },
+            'Bitte warten'
+        );
+      } else if(this.$route.query.confirm) {
+        let notifier = this.$awn;
+        notifier.async(
+          AuthService.confirmUser(this.$route.query.confirm),
+          response => { 
+            notifier.success(response.message);
+            const token = response.token;
+            const user = response.user;
+
+            this.$store.dispatch('auth/login', { token, user });
+            this.$router.push('/');
+          }, error => { notifier.alert(error.response.data.response.message) },
+            'Bitte warten'
+        );
+      }
+      AuthService.getGoogleURL().then(response => this.googleurl = response.url);
+    },
     methods: {
-      onSubmit() {
-        // this will be called only after form is valid. You can do api call here to login
+     async loginUser() {
+          const credentials = {
+            password: this.password,
+            email: this.email,
+          };
+          let notifier = this.$awn;
+          notifier.async(
+            AuthService.loginUser(credentials),
+            response => { 
+              notifier.success(response.message);
+              const token = response.token;
+              const user = response.user;
+
+              this.$store.dispatch('auth/login', { token, user });
+              this.$router.push('/');
+            }, error => { notifier.alert(error.response.data.response.message) },
+            'Bitte warten'
+          );
       }
     }
   };

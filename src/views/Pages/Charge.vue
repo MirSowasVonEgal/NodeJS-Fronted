@@ -50,7 +50,7 @@
                 <b-row>
                   <b-col md="6" style="width: 100%">
                       <label class="form-control-label">Zahlungsmethode</label>
-                         <select class="form-control" v-model="paymethod" aria-label="Default select example">
+                         <select class="form-control" v-model="charge.paymethod" aria-label="Default select example">
                             <option selected value="paypal">PayPal</option>
                         </select>
                   </b-col>
@@ -59,7 +59,7 @@
                       type="number"
                       label="Betrag "
                       placeholder="5.00"
-                      v-model="amount"
+                      v-model="charge.amount"
                     >
                     </base-input>
                   </b-col>
@@ -69,7 +69,8 @@
                     
                   </b-col>
                    <b-col md="4">
-                        <a href="#!" style="width: 100%;" class="btn btn-success"><b>Jetzt aufladen!</b></a>
+                        <vue-element-loading :active="loading" spinner="bar-fade-scale" color="#2dce89"/>
+                        <a href="#" @click="chargeUser()" style="width: 100%;" class="btn btn-success"><b>Jetzt aufladen!</b></a>
                   </b-col>
                 </b-row>
               </div>
@@ -83,20 +84,50 @@
 
 <script>
 import DashboardStats from '../Layout/DashboardStats.vue';
+import ChargeService from '../../services/ChargeService';
+import AuthService from '../../services/AuthService';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { DashboardStats },
+  computed: {
+    ...mapGetters({ user: "auth/getUser" })
+  },
   data() {
     return {
-      user: {
-        username: '',
-        email: '',
+      charge: {
+        amount: '3.00',
+        paymethod: 'paypal'
       },
-      amount: '3.00',
-      paymethod: 'paypal'
+      loading: false
     };
   },
+  beforeCreate() {
+    if(this.$route.query.method == 'paypal') {
+      const credentials = {
+        paymentid: this.$route.query.paymentId,
+        payerid: this.$route.query.PayerID,
+      };
+      ChargeService.chargeUserPayPal(credentials).then(response => {
+        AuthService.getProfile().then(user => this.$store.dispatch("auth/user", user));
+        this.$awn.success(response.message);
+      }).catch(error => {
+        this.$awn.alert(error.response.data.response.message);
+      });
+    }
+  },
   methods: {
+    chargeUser() {
+      this.loading = true;
+      if(this.charge.paymethod == 'paypal') {
+        ChargeService.generateURLPayPal(this.charge.amount).then(response => {
+            window.location.href = response.url;
+        }).catch(error => {
+            this.loading = false;
+            this.$awn.alert(error.response.data.response.message);
+        });
+      }
+    }
   }
 };
 </script>

@@ -75,7 +75,7 @@
     </b-card>
 </template>
 <script>
-  import projects from './../projects'
+  import projects from '../default'
   import { Table, TableColumn} from 'element-ui'
   export default {
     name: 'light-table',

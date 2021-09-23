@@ -28,7 +28,7 @@
             <b-card-header class="bg-transparent pb-5">
               <div class="text-muted text-center mt-2 mb-4"><small>Registieren mit</small></div>
               <div class="text-center">
-                <a href="#" class="btn btn-neutral btn-icon">
+                <a :href="googleurl" class="btn btn-neutral btn-icon">
                   <span class="btn-inner--icon"><img src="img/icons/common/google.svg"></span>
                   <span class="btn-inner--text">Google</span>
                 </a>
@@ -39,7 +39,7 @@
                 <small>Oder mit Zugangsdaten einloggen</small>
               </div>
               <validation-observer v-slot="{handleSubmit}" ref="formValidator">
-                <b-form role="form" @submit.prevent="handleSubmit(onSubmit)">
+                <b-form role="form" @submit.prevent="handleSubmit(registerUser)">
                   <base-input alternative
                               class="mb-3"
                               prepend-icon="ni ni-hat-3"
@@ -79,28 +79,40 @@
                     </b-col>
                   </b-row>
                   <div class="text-center">
-                    <b-button type="submit" variant="primary" class="mt-4">Create account</b-button>
+                    <b-button type="submit" variant="primary" class="mt-4">Account erstellen</b-button> {{ message }}
                   </div>
                 </b-form>
               </validation-observer>
             </b-card-body>
           </b-card>
+          <b-row class="mt-3">
+            <b-col cols="6">
+              <router-link to="/resetpasword" class="text-light"><small>Passwort vergessen?</small></router-link>
+            </b-col>
+            <b-col cols="6" class="text-right">
+              <router-link to="/login" class="text-light"><small>Du hast schon einen Account?</small></router-link>
+            </b-col>
+          </b-row>
         </b-col>
       </b-row>
     </b-container>
   </div>
 </template>
 <script>
+import AuthService from '../../services/AuthService'
+
   export default {
     name: 'register',
     data() {
       return {
           username: '',
           email: '',
-          password: 'Test',
+          password: '',
           agree: false,
           password_strength: 'Zu kurz!',
-          password_strength_color: 'danger'
+          password_strength_color: 'danger',
+          message: '',
+          googleurl: '#',
       }
     },
     watch: {
@@ -118,9 +130,23 @@
         }
       }
     },
+    created: function() {
+      AuthService.getGoogleURL().then(response => this.googleurl = response.url);
+    },
     methods: {
-      onSubmit() {
-        // this will be called only after form is valid. You can do an api call here to register users
+      async registerUser() {
+        const credentials = {
+          username: this.username,
+          password: this.password,
+          email: this.email,
+        };
+        let notifier = this.$awn;
+        notifier.async(
+          AuthService.registerUser(credentials),
+          response => notifier.success(response.message), 
+          error => notifier.alert(error.response.data.response.message),
+            'Bitte warten'
+        );
       }
     }
 

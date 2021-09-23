@@ -38,14 +38,44 @@ const routes = [
         component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Transactions.vue')
       },
       {
-        path: '/tables',
-        name: 'tables',
-        component: () => import(/* webpackChunkName: "demo" */ '../views/RegularTables.vue')
+        path: '/products',
+        name: 'products',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Products.vue')
       },
       {
         path: '/rootserver',
         name: 'rootserver',
         component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/RootServer/OrderRootServer.vue')
+      },
+      {
+        path: '/rootserver/:id',
+        name: 'rootserverview',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/RootServer/ViewRootServer.vue')
+      },
+      {
+        path: '/vserver',
+        name: 'vserver',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/VServer/OrderVServer.vue')
+      },
+      {
+        path: '/vserver/:id',
+        name: 'vserverview',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/VServer/ViewVServer.vue')
+      },
+      {
+        path: '/tickets',
+        name: 'tickets',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Ticket/Tickets.vue')
+      },
+      {
+        path: '/ticket/create',
+        name: 'createticket',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Ticket/CreateTicket.vue')
+      },
+      {
+        path: '/ticket/:id',
+        name: 'viewticket',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Ticket/ViewTicket.vue')
       },
       { path: '/ticket', redirect: '/tickets' }
     ]
@@ -64,6 +94,11 @@ const routes = [
         path: '/register',
         name: 'register',
         component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Register.vue')
+      },
+      {
+        path: '/resetpassword',
+        name: 'resetpassword',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/ResetPassword.vue')
       },
       { path: '*', component: NotFound }
     ]

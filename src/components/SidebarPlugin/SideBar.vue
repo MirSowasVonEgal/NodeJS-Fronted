@@ -7,7 +7,7 @@
                 
             </navbar-toggle-button>
             <center><router-link to="/" custom v-slot="{ navigate }">
-                <a href="/"><img style="width: 100px; height: 100px;" @click="navigate" @keypress.enter="navigate" role="link" src="img/brand/green.png"></a>
+                <a href="/"><img style="width: 100px; height: 100px;" @click="navigate" @keypress.enter="navigate" role="link" src="/img/brand/green.png"></a>
             </router-link></center>
 
             <slot name="mobile-right">
@@ -23,7 +23,7 @@
                                 <img alt="Image placeholder" src="https://secure.gravatar.com/avatar/39d5218c0db52fc8b11529916cdf298d?size=80">
                               </span>
                         <b-media-body class="ml-2 d-none d-lg-block">
-                          <span class="mb-0 text-sm  font-weight-bold">Nutzername</span>
+                          <span class="mb-0 text-sm  font-weight-bold">{Nutzername}</span>
                         </b-media-body>
                       </b-media>
                     </a>
@@ -130,7 +130,7 @@
                     <sidebar-item
                         :link="{
                           name: 'Ticket',
-                          path: '/ticket',
+                          path: '/tickets',
                           icon: 'ni ni-support-16 text-yellow',
                         }"
                       >
@@ -168,7 +168,7 @@
     props: {
       logo: {
         type: String,
-        default: 'img/brand/green.png',
+        default: '/img/brand/green.png',
         description: 'Sidebar app logo'
       },
       autoClose: {

@@ -29,11 +29,11 @@
                   header-row-class-name="thead-light"
                   :data="currentContent">
             <el-table-column label="ID"
-                             min-width="170px"
+                             min-width="300px"
                              prop="name">
                 <template v-slot="{row}">
                         <b-media-body>
-                            <span class="font-weight-600 name mb-0 text-sm">{{row.id}} bd432431-8024-4584-8755-3d6c4f66375f</span>
+                            <span class="font-weight-600 name mb-0 text-sm">{{ row._id }}</span>
                         </b-media-body>
                 </template>
             </el-table-column>
@@ -53,20 +53,28 @@
                 </template>
             </el-table-column>
 
-             <el-table-column label="Betrag" min-width="120px">
-                1€
+             <el-table-column label="Betrag" min-width="100px">
+                  <template v-slot="{row}">
+                    {{ row.amount }}€
+                  </template>
             </el-table-column>
 
-            <el-table-column label="Produkt" min-width="120px">
-                Guthaben
+            <el-table-column label="Produkt" min-width="130px">
+                <template v-slot="{row}">
+                    {{ row.product }}
+                </template>
             </el-table-column>
 
-            <el-table-column label="Datum" min-width="120px">
-                19.08.2021 18:30
+            <el-table-column label="Datum" min-width="150px">
+                <template v-slot="{row}">
+                    {{ new Date(Number(row.created)) | moment('DD.MM.YYYY, HH:mm') }}
+                </template>
             </el-table-column>
 
             <el-table-column label="PDF">
-                <i class="fa fa-file-download"></i>
+                <template v-slot="{row}">
+                <a @click="downloadPDF(row._id)" style="cursor: pointer"><i class="fa fa-file-download"></i></a>
+                </template>
             </el-table-column>
         </el-table>
 
@@ -80,8 +88,11 @@
     </div>
 </template>
 <script>
-  import projects from '../Tables/projects'
+import invoices from '../Tables/default'
+import InvoiceService from '../../services/InvoiceService';
 import DashboardStats from '../Layout/DashboardStats.vue';
+import FileDownload from 'js-file-download';
+
   import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
 
   export default {
@@ -96,29 +107,39 @@ import DashboardStats from '../Layout/DashboardStats.vue';
     },
     data() {
       return {
-        projects,
-        currentContent: projects,
+        invoices,
+        currentContent: invoices,
         currentPage: 1,
         perpage: 10,
-        total: projects.length,
+        total: invoices.length,
         search: '',
       };
     },
     created: function() {
         this.currentPage = 1;
         this.changeTableView(1);
+        InvoiceService.getInvoices().then(response => {
+            this.invoices = response.invoices;
+            this.currentContent = JSON.parse(JSON.stringify(this.invoices));
+            this.currentContent = this.currentContent.slice(0, 10)
+        })
     },
      methods: {
         changeTableView: function(value) {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
+            this.currentContent = JSON.parse(JSON.stringify(this.invoices));
             this.currentContent.splice(0, ((value - 1) * this.perpage));
             this.currentContent = this.currentContent.slice(0, 10)
             this.search = ''
         },
         searchItem: function() {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
-            this.currentContent = this.projects.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
+            this.currentContent = JSON.parse(JSON.stringify(this.invoices));
+            this.currentContent = this.invoices.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
             this.currentContent = this.currentContent.slice(0, 10)
+        },
+        downloadPDF: function(id) {
+             InvoiceService.getInvoice(id).then(response => {
+                FileDownload(response, 'ShadeHost-Rechnung - ' + id + '.pdf');
+            })
         }
     }
   }
