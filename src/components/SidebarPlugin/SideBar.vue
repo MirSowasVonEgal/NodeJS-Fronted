@@ -33,27 +33,21 @@
                       <b-dropdown-header class="noti-title">
                         <h6 class="text-overflow m-0">Willkommen!</h6>
                       </b-dropdown-header>
-                      <b-dropdown-item href="#!">
-                        <i class="ni ni-single-02"></i>
-                        <span>Mein Profil</span>
-                      </b-dropdown-item>
-                      <b-dropdown-item href="#!">
-                        <i class="ni ni-lock-circle-open"></i>
-                        <span>Passwort ändern</span>
-                      </b-dropdown-item>
-                      <b-dropdown-item href="#!">
-                        <i class="ni ni-money-coins"></i>
-                        <span>Guthaben aufladen</span>
-                      </b-dropdown-item>
-                      <b-dropdown-item href="#!">
-                        <i class="ni ni-support-16"></i>
-                        <span>Deine Tickets</span>
-                      </b-dropdown-item>
+                      <router-link to="/profile" custom v-slot="{ navigate }" role="menuitem">
+                            <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-single-02"></i> <span>Mein Profil</span></li>
+                      </router-link>
+                      <router-link to="/profile" custom v-slot="{ navigate }" role="menuitem">
+                            <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-lock-circle-open"></i> <span>Passwort ändern</span></li>
+                      </router-link>
+                      <router-link to="/charge" custom v-slot="{ navigate }" role="menuitem">
+                            <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-money-coins"></i> <span>Guthaben aufladen</span></li>
+                      </router-link>
+                      <router-link to="/ticket" custom v-slot="{ navigate }" role="menuitem">
+                            <li class="dropdown-item" @click="navigate" @keypress.enter="navigate" role="link"> <i class="ni ni-support-16"></i> <span>Deine Tickets</span></li>
+                      </router-link>
                       <div class="dropdown-divider"></div>
-                      <b-dropdown-item href="#!">
-                        <i class="ni ni-user-run"></i>
-                        <span>Ausloggen</span>
-                      </b-dropdown-item>
+                            <li class="dropdown-item" @click="$store.dispatch('auth/logout') && $awn.success('Du wurdest abgemeldet!')" role="link"> <i class="ni ni-user-run"></i> <span>Ausloggen</span></li>
+
 
                     </template>
                   </base-dropdown>

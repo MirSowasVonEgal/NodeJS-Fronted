@@ -29,7 +29,7 @@
                   header-row-class-name="thead-light"
                   :data="currentContent">
             <el-table-column label="ID"
-                             min-width="300px"
+                             min-width="400px"
                              prop="name">
                 <template v-slot="{row}">
                         <b-media-body>
@@ -53,27 +53,28 @@
                 </template>
             </el-table-column>
 
-             <el-table-column label="Betrag" min-width="100px">
+             <el-table-column label="Betrag" min-width="150px">
                   <template v-slot="{row}">
                     {{ row.amount }}€
                   </template>
             </el-table-column>
 
-            <el-table-column label="Produkt" min-width="130px">
+            <el-table-column label="Produkt" min-width="150px">
                 <template v-slot="{row}">
                     {{ row.product }}
                 </template>
             </el-table-column>
 
-            <el-table-column label="Datum" min-width="150px">
+            <el-table-column label="Datum" min-width="200px">
                 <template v-slot="{row}">
                     {{ new Date(Number(row.created)) | moment('DD.MM.YYYY, HH:mm') }}
                 </template>
             </el-table-column>
 
-            <el-table-column label="PDF">
+            <el-table-column label="PDF" min-width="100px">
                 <template v-slot="{row}">
                 <a @click="downloadPDF(row._id)" style="cursor: pointer"><i class="fa fa-file-download"></i></a>
+                <vue-element-loading :active="choice == row._id" spinner="bar-fade-scale" color="#2dce89"/>
                 </template>
             </el-table-column>
         </el-table>
@@ -85,13 +86,13 @@
         </b-col>
       </b-row>
       </b-container>
+      <a ref="download" style="display:none"></a>
     </div>
 </template>
 <script>
 import invoices from '../Tables/default'
 import InvoiceService from '../../services/InvoiceService';
 import DashboardStats from '../Layout/DashboardStats.vue';
-import FileDownload from 'js-file-download';
 
   import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
 
@@ -113,6 +114,7 @@ import FileDownload from 'js-file-download';
         perpage: 10,
         total: invoices.length,
         search: '',
+        choice: ''
       };
     },
     created: function() {
@@ -137,8 +139,17 @@ import FileDownload from 'js-file-download';
             this.currentContent = this.currentContent.slice(0, 10)
         },
         downloadPDF: function(id) {
-             InvoiceService.getInvoice(id).then(response => {
-                FileDownload(response, 'ShadeHost-Rechnung - ' + id + '.pdf');
+            if(this.choice != '') return;
+            this.choice = id;
+            InvoiceService.getInvoice(id).then(response => {
+                this.choice = '';
+                var anchor = this.$refs.download;
+                var windowUrl = window.URL || window.webkitURL;
+                var url = windowUrl.createObjectURL(new Blob([response], { type: "application/pdf"}));
+                anchor.href = url;
+                anchor.download = 'ShadeHost-Rechnung - ' + id + '.pdf';
+                anchor.click();
+                windowUrl.revokeObjectURL(url);
             })
         }
     }

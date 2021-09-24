@@ -13,7 +13,7 @@
               <h3 class="mb-0">Profil</h3>
             </b-col>
             <b-col cols="2" class="text-right">
-              <a @click="updateProfile()" style="cursor: pointer; padding: 11px; width: 100%; height: 100%; color: white;" class="btn btn-sm btn-primary">Speichern</a>
+              <a @click="updateProfile()" style="cursor: pointer; padding: 11px; width: 240px; margin-left: -200px; height: 100%; color: white;" class="btn btn-sm btn-primary">Speichern</a>
             </b-col>
           </b-row>
           <tabs>

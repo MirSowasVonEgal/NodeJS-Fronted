@@ -18,7 +18,7 @@
               </b-col>
             </b-row>
             <form>
-              <textarea class="form-control" rows="16" placeholder="Schreibe deine neuen Ideen auf..."></textarea>
+              <textarea @change="changeNotes()" v-model="notes" class="form-control" rows="16" placeholder="Schreibe deine neuen Ideen auf..."></textarea>
             </form>
           </card>
         </b-col>
@@ -80,19 +80,31 @@
 </template>
 <script>
 import DashboardStats from './Layout/DashboardStats.vue';
+import AuthService from '../services/AuthService';
 
   export default {
   components: { DashboardStats },
     data() {
        return {
-
+          notes: ''
        }
     },
     methods: {
-     
+      changeNotes() {
+        let notifier = this.$awn;
+        notifier.async(
+          AuthService.updateProfile({ notes: this.notes }),
+          response => notifier.success(response.message), 
+          error => notifier.alert(error.response.data.response.message),
+          'Bitte warten'
+        );
+      }
     },
-    mounted() {
-    }
+    created() {
+      if(this.$store.state.auth.user.notes) {
+        this.notes = this.$store.state.auth.user.notes;
+      }
+    },
   };
 </script>
 <style>

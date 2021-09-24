@@ -70,7 +70,7 @@
                   </b-col>
                    <b-col md="4">
                         <vue-element-loading :active="loading" spinner="bar-fade-scale" color="#2dce89"/>
-                        <a href="#" @click="chargeUser()" style="width: 100%;" class="btn btn-success"><b>Jetzt aufladen!</b></a>
+                        <a @click="chargeUser()" style="width: 100%; cursor: pointer; color: white;" class="btn btn-success"><b>Jetzt aufladen!</b></a>
                   </b-col>
                 </b-row>
               </div>

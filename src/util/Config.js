@@ -1,5 +1,5 @@
 var config = {}
 
-config.API_URL = "http://localhost:3000"
+config.API_URL = "http://local.shadehost.eu:3000"
 
 module.exports = config;

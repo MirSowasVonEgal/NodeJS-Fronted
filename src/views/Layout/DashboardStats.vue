@@ -69,7 +69,7 @@ export default {
   computed: {
     ...mapGetters({ user: "auth/getUser" })
   },
-  mounted() {
+  created() {
     const vm = this
       function timeout() {
         vm.timeout = setTimeout(() => {

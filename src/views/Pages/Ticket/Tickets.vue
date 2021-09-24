@@ -34,11 +34,11 @@
                   header-row-class-name="thead-light"
                   :data="currentContent">
             <el-table-column label="Titel"
-                             min-width="170px"
+                             min-width="250px"
                              prop="name">
                 <template v-slot="{row}">
                         <b-media-body>
-                            <span class="font-weight-600 name mb-0 text-sm">{{row.id}} Java 8 installieren</span>
+                            <span class="font-weight-600 name mb-0 text-sm">{{row.title}}</span>
                         </b-media-body>
                 </template>
             </el-table-column>
@@ -47,25 +47,37 @@
                              min-width="120px"
                              prop="status">
                 <template v-slot="{row}">
-                    <badge v-if="row.status == 'Bezahlt'" class="badge-dot mr-4" type="">
-                        <i :class="`bg-success`"></i>
-                        <span class="status" :class="`text-success`">{{row.status}}</span>
-                    </badge>
-                    <badge v-else class="badge-dot mr-4" type="">
-                        <i :class="`bg-danger`"></i>
-                        <span class="status" :class="`text-danger`">{{row.status}}</span>
-                    </badge>
+                    <div v-if="!row.closed">
+                      <badge v-if="row.status == 'Offen'" class="badge-dot mr-4" type="">
+                          <i :class="`bg-success`"></i>
+                          <span class="status" :class="`text-success`">{{row.status}}</span>
+                      </badge>
+                      <badge v-if="row.status == 'Beantwortet'" class="badge-dot mr-4" type="">
+                          <i :class="`bg-yellow`"></i>
+                          <span class="status" :class="`text-yellow`">{{row.status}}</span>
+                      </badge>
+                    </div>
+                    <div v-else>
+                      <badge class="badge-dot mr-4" type="">
+                          <i :class="`bg-danger`"></i>
+                          <span class="status" :class="`text-danger`">Geschlossen</span>
+                      </badge>
+                    </div>
                 </template>
             </el-table-column>
 
-            <el-table-column label="Datum" min-width="120px">
-                19.08.2021 18:30
+            <el-table-column label="Datum" min-width="200px">
+                <template v-slot="{row}">
+                    {{ new Date(Number(row.lastupdate)) | moment('DD.MM.YYYY, HH:mm') }}
+                </template>
             </el-table-column>
 
-            <el-table-column label="View">
-                <router-link to="/ticket/bd432431-8024-4584-8755-3d6c4f66375f" custom v-slot="{ navigate }">
-                    <a @click="navigate" @keypress.enter="navigate" role="link" style="cursor: pointer"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
-                </router-link>
+            <el-table-column label="View" min-width="150px">
+                <template v-slot="{row}">
+                  <router-link :to="'/ticket/' + row._id" custom v-slot="{ navigate }">
+                      <a @click="navigate" @keypress.enter="navigate" role="link" style="cursor: pointer"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+                  </router-link>
+                </template>
             </el-table-column>
         </el-table>
 
@@ -79,9 +91,10 @@
     </div>
 </template>
 <script>
-  import projects from '../../Tables/default'
+import tickets from '../../Tables/default'
 import DashboardStats from '../../Layout/DashboardStats.vue';
-  import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
+import TicketService from '../../../services/TicketService'
+import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
 
   export default {
     name: 'light-table',
@@ -95,28 +108,34 @@ import DashboardStats from '../../Layout/DashboardStats.vue';
     },
     data() {
       return {
-        projects,
-        currentContent: projects,
+        tickets,
+        currentContent: tickets,
         currentPage: 1,
         perpage: 10,
-        total: projects.length,
+        total: tickets.length,
         search: '',
       };
     },
-    created: function() {
+    created() {
         this.currentPage = 1;
         this.changeTableView(1);
+        TicketService.getTickets().then(response => {
+            response.tickets.sort((a, b) => b.closed - a.closed);
+            this.tickets = response.tickets.reverse();
+            this.currentContent = JSON.parse(JSON.stringify(this.tickets));
+            this.currentContent = this.currentContent.slice(0, 10)
+        })
     },
      methods: {
         changeTableView: function(value) {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
+            this.currentContent = JSON.parse(JSON.stringify(this.tickets));
             this.currentContent.splice(0, ((value - 1) * this.perpage));
             this.currentContent = this.currentContent.slice(0, 10)
             this.search = ''
         },
         searchItem: function() {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
-            this.currentContent = this.projects.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
+            this.currentContent = JSON.parse(JSON.stringify(this.tickets));
+            this.currentContent = this.tickets.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
             this.currentContent = this.currentContent.slice(0, 10)
         }
     }
