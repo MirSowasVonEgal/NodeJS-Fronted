@@ -331,7 +331,10 @@ export default {
       [Dropdown.name]: Dropdown,
       [DropdownItem.name]: DropdownItem,
       [DropdownMenu.name]: DropdownMenu, },
-    mounted: function() {
+    created() {
+        
+    },
+    /*mounted: function() {
         document.cookie="PVEAuthCookie=PVE:7367cd8e-710f-4451-9dc4-90881cf158b2@pve:6149F96B::v8qJKXQ+mWtKktcVwYPdGDKpIR6US/HHIBHF9RpC77uoGRYWaUiNB+8T+SITXCyHL3spmH4C6jHoqGUpf6m26/b8VvVNiBD9clXkLdvNG77WU8hW0dLUmy9Yqfs9JM1MWh+xtyku5oTd6JKdiSFCrl89xqeW97Pp10JRN6jmDKr4ybL9YqXBTiZNGSYPg/AUGqQZEZfXOPGji9Qblr65Af2EQrrGK0uEuDKYxZ+hQS+gCFf5yeknCT7pn4QQ7trYckhlLmQoMOt0V0QcNITitsSrJHJHQD4iwwB6blEjs801eus65bdvKqFheTgbOTR/aiz7od7uLe4I4ii4oI22Yw==;domain=local.shadehost.eu";
 
         var iframe = this.$refs.console
@@ -353,7 +356,7 @@ export default {
             }
             }
         }
-    }
+    }*/
 }
 </script>
 

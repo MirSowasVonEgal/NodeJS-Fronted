@@ -121,7 +121,7 @@ import DashboardStats from '../Layout/DashboardStats.vue';
         this.currentPage = 1;
         this.changeTableView(1);
         InvoiceService.getInvoices().then(response => {
-            this.invoices = response.invoices;
+            this.invoices = response.invoices.reverse();
             this.currentContent = JSON.parse(JSON.stringify(this.invoices));
             this.currentContent = this.currentContent.slice(0, 10)
         })

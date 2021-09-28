@@ -143,6 +143,7 @@
 </template>
 <script>
 import DashboardStats from '../../Layout/DashboardStats.vue';
+import ProductService from '../../../services/ProductService';
 
   export default {
     name: 'light-table',
@@ -153,6 +154,7 @@ import DashboardStats from '../../Layout/DashboardStats.vue';
       return {
           selection: '',
           order: false,
+          products: []
       };
     },
     methods: {
@@ -160,6 +162,12 @@ import DashboardStats from '../../Layout/DashboardStats.vue';
             this.selection = '';
             this.order = true;
         }
+    },
+    created() {
+        ProductService.getProduct("RootServer").then(response => {
+            this.products = Array.from(response.products).sort((a, b) => a.data.name.localeCompare(b.data.name));
+            console.log(this.products)
+        });
     }
   }
 </script>
