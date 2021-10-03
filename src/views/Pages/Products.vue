@@ -28,13 +28,12 @@
         <el-table class="table-responsive table"
                   header-row-class-name="thead-light"
                   :data="currentContent">
+
             <el-table-column label="ID"
-                             min-width="200px"
+                             min-width="210px"
                              prop="name">
                 <template v-slot="{row}">
-                        <b-media-body>
-                            <span class="font-weight-600 name mb-0 text-sm">{{row.id}} bd432431-8024-4584-8755-3d6c4f66375f</span>
-                        </b-media-body>
+                            <span v-if="row.vserver != null" class="font-weight-600 name mb-0 text-sm">{{row.vserver._id}}</span>
                 </template>
             </el-table-column>
 
@@ -42,37 +41,53 @@
                              min-width="130px"
                              prop="status">
                 <template v-slot="{row}">
-                    <badge v-if="row.status == 'Bezahlt'" class="badge-dot mr-4" type="">
+                    <badge v-if="row.vserver != null" class="badge-dot mr-4" type="">
+                    <badge v-if="row.vserver.status == 'Online'" class="badge-dot mr-4" type="">
                         <i :class="`bg-success`"></i>
-                        <span class="status" :class="`text-success`">{{row.status}}</span>
+                        <span class="status" :class="`text-success`">{{row.vserver.status}}</span>
                     </badge>
-                    <badge v-if="row.status == 'Installation'" class="badge-dot mr-4" type="">
+                    <badge v-if="row.vserver.status == 'Installation'" class="badge-dot mr-4" type="">
                         <i :class="`bg-warning`"></i>
-                        <span class="status" :class="`text-warning`">{{row.status}}</span>
+                        <span class="status" :class="`text-warning`">{{row.vserver.status}}</span>
                     </badge>
-                    <badge v-else class="badge-dot mr-4" type="">
+                    <badge v-if="row.vserver.status != 'Online' && row.vserver.status != 'Installation'" class="badge-dot mr-4" type="">
                         <i :class="`bg-danger`"></i>
-                        <span class="status" :class="`text-danger`">{{row.status}}</span>
+                        <span class="status" :class="`text-danger`">{{row.vserver.status}}</span>
+                    </badge>
                     </badge>
                 </template>
             </el-table-column>
 
-            <el-table-column label="Produkt" min-width="140px">
-                RootServer
+            <el-table-column label="Produkt" min-width="150px">
+                <template v-slot="{row}">
+                    <badge v-if="row.vserver != null" class="badge-dot mr-4" style="color: #606266" type="">
+                        VServer
+                    </badge>
+                </template>
             </el-table-column>
 
-             <el-table-column label="Kosten" min-width="150px">
-                1€ / 30 Tage
+             <el-table-column label="Kosten" min-width="170px">
+                <template v-slot="{row}">
+                    <badge v-if="row.vserver != null" class="badge-dot mr-4" style="color: #606266" type="">
+                        {{ row.vserver.price }} € / 30 Tage
+                    </badge>
+                </template>
             </el-table-column>
 
             <el-table-column label="Bezahlt bis" min-width="180px">
-                19.08.2021 18:30
+                <template v-slot="{row}">
+                    <badge v-if="row.vserver != null" class="badge-dot mr-4" style="color: #606266" type="">
+                        {{ row.vserver.paidup | moment('DD.MM.YYYY, HH:mm') }} 
+                    </badge>
+                </template>
             </el-table-column>
 
             <el-table-column label="Öffnen" min-width="120px">
-                <router-link to="/rootserver/bd432431-8024-4584-8755-3d6c4f66375f" custom v-slot="{ navigate }">
-                    <a @click="navigate" @keypress.enter="navigate" role="link" style="cursor: pointer"><i class="ni ni-active-40" aria-hidden="true"></i></a>
-                </router-link>
+                <template v-slot="{row}">
+                    <router-link v-if="row.vserver != null" :to="'/vserver/' + row.vserver._id" custom v-slot="{ navigate }">
+                        <a @click="navigate" @keypress.enter="navigate" role="link" style="cursor: pointer"><i class="ni ni-active-40" aria-hidden="true"></i></a>
+                    </router-link>
+                </template>
             </el-table-column>
         </el-table>
 
@@ -86,9 +101,11 @@
     </div>
 </template>
 <script>
-  import projects from '../Tables/default'
+import products from '../Tables/default';
+import VServerService from '../../services/VServerService';
 import DashboardStats from '../Layout/DashboardStats.vue';
   import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
+import Badge from '../../components/Badge.vue';
 
   export default {
     name: 'light-table',
@@ -99,31 +116,37 @@ import DashboardStats from '../Layout/DashboardStats.vue';
       [DropdownItem.name]: DropdownItem,
       [DropdownMenu.name]: DropdownMenu,
       DashboardStats,
+        Badge,
     },
     data() {
       return {
-        projects,
-        currentContent: projects,
+        products,
+        currentContent: products,
         currentPage: 1,
         perpage: 10,
-        total: projects.length,
+        total: products.length,
         search: '',
       };
     },
     created: function() {
         this.currentPage = 1;
         this.changeTableView(1);
+        VServerService.getServers().then(response => {
+            this.products = response.vservers.reverse();
+            this.currentContent = JSON.parse(JSON.stringify(this.products));
+            this.currentContent = this.currentContent.slice(0, 10)
+        })
     },
      methods: {
         changeTableView: function(value) {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
+            this.currentContent = JSON.parse(JSON.stringify(this.products));
             this.currentContent.splice(0, ((value - 1) * this.perpage));
             this.currentContent = this.currentContent.slice(0, 10)
             this.search = ''
         },
         searchItem: function() {
-            this.currentContent = JSON.parse(JSON.stringify(this.projects));
-            this.currentContent = this.projects.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
+            this.currentContent = JSON.parse(JSON.stringify(this.products));
+            this.currentContent = this.products.filter(i => JSON.stringify(i).toString().toLowerCase().includes(this.search.toString().toLowerCase()));
             this.currentContent = this.currentContent.slice(0, 10)
         }
     }

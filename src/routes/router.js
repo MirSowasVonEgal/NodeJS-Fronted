@@ -30,7 +30,7 @@ router.beforeEach((to, from, next) => {
   const isPublicPage = authPages.includes(to.path);
   const token = localStorage.getItem('token');
 
-  if(to.path == "/resetpassword") {
+  if(to.path == "/agb" || to.path == "/impressum" || to.path == "/datenschutz" || to.path == "/wiederruf") {
     return next();
   }
 

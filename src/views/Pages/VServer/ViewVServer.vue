@@ -4,7 +4,7 @@
       <dashboard-stats/>
      </base-header>
 
-     <b-container fluid class="mt--7">
+     <b-container fluid class="mt--7" v-if="vserver != null">
         <b-row>
             <b-col xl="12" class="order-xl-1">
             <card>
@@ -48,29 +48,33 @@
                     <b-col lg="4">
                         <div class="card" style="width: 100%;">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item">ID: <b>40f15997-8c98-4d6f-bf9e-91eb4952b664</b></li>
-                                <li class="list-group-item">Server-ID: <b>136</b></li>
+                                <li class="list-group-item">ID: <b>{{ vserver._id }}</b></li>
+                                <li class="list-group-item">Server-ID: <b>{{ vserver.serverid }}</b></li>
                                 <li class="list-group-item">Status:
-                                    <badge v-if="'Online' == 'Online'" class="badge-dot mr-4" type="">
-                                    <i :class="`bg-success`"></i>
-                                    <span class="status" :class="`text-success`">Online</span>
+                                   <badge v-if="vserver.status == 'Online'" class="badge-dot mr-4" type="">
+                                        <i :class="`bg-success`"></i>
+                                        <span class="status" :class="`text-success`">{{vserver.status}}</span>
                                     </badge>
-                                    <badge v-if="'Online' == 'Installation'" class="badge-dot mr-4" type="">
+                                    <badge v-if="vserver.status == 'Installation'" class="badge-dot mr-4" type="">
                                         <i :class="`bg-warning`"></i>
-                                        <span class="status" :class="`text-warning`">Online</span>
+                                        <span class="status" :class="`text-warning`">{{vserver.status}}</span>
                                     </badge>
-                                    <badge v-if="'Online' == 'Offline'" class="badge-dot mr-4" type="">
+                                    <badge v-if="vserver.status != 'Online' && vserver.status != 'Installation'" class="badge-dot mr-4" type="">
                                         <i :class="`bg-danger`"></i>
-                                        <span class="status" :class="`text-danger`">Online</span>
+                                        <span class="status" :class="`text-danger`">{{vserver.status}}</span>
                                     </badge>
                                 </li>
-                                <li class="list-group-item">Betriebssystem: <b>Debian-10</b></li>
-                                <li class="list-group-item">Node: <b>Node-02</b></li>
-                                <li class="list-group-item">Haupt-IP-Adresse: <b>192.168.2.100</b></li>
+                                <li class="list-group-item">Betriebssystem: <b>{{ vserver.os.split("-")[0] + "-" +vserver.os.split("-")[1] }}</b></li>
+                                <li class="list-group-item">Node: <b>{{ vserver.node }}</b></li>
+                                <li class="list-group-item">Haupt-IP-Adresse: <b>{{ networks[0].ip }}</b>&nbsp;
+                                <i style="color: #233dd2; cursor: pointer;" @click="copyIP()" class="fa fa-clone" aria-hidden="true"/>
                                 <li class="list-group-item">User: <b>root</b></li>
-                                <li class="list-group-item">Passwort: •••••••••••• <i class="fa fa-eye" aria-hidden="true"></i> <i class="fa fa-clone" aria-hidden="true"></i></li>
-                                <li class="list-group-item">Preis: <b>0.99€ / 30 Tage</b></li>
-                                <li class="list-group-item">Bestellt am: <b>29.05.2021 21:47</b></li>
+                                <li class="list-group-item">Passwort: {{ password }}&nbsp;
+                                <i style="color: #233dd2; cursor: pointer;" v-if="password == '••••••••••••'" @click="showPassword()" class="fa fa-eye" aria-hidden="true"/>
+                                <i style="color: green; cursor: pointer;" v-else @click="hidePassword()" class="fa fa-eye" aria-hidden="true"/>&nbsp;
+                                <i style="color: #233dd2; cursor: pointer;" @click="copyPassword()" class="fa fa-clone" aria-hidden="true"/> </li>
+                                <li class="list-group-item">Preis: <b>{{ vserver.price }}€ / 30 Tage</b></li>
+                                <li class="list-group-item">Bestellt am: <b>{{ Number(vserver.created) | moment('DD.MM.YYYY, HH:mm') }}</b></li>
                             </ul>
                         </div>
                     </b-col>
@@ -84,12 +88,12 @@
                                             <span>Bezahlt bis</span>
                                             </div>
                                             <div class="progress-percentage">
-                                            <center><span>29.10.2021 21:47 (10 Tage und 5 Stunden)</span></center>
+                                            <center><span>{{ vserver.paidup | moment('DD.MM.YYYY, HH:mm') }} ( {{ relativTime }}) </span></center>
                                             </div>
                                         </div>
                                         <base-progress
                                                         type="yellow"
-                                                        :value=100
+                                                        :value="(((((vserver.paidup - new Date().getTime()) / 1000) / 2592000) * 100) | 0)"
                                                         size="lg">
                                                         <slot label>
                                                         </slot>
@@ -101,12 +105,12 @@
                                             <span>Prozessor Auslastung</span>
                                             </div>
                                             <div class="progress-percentage">
-                                            <span>6%</span>
+                                            <span>( {{ status.cpus  }} Kern/e ) {{ ((status.cpu * 100) | 0) }}%</span>
                                             </div>
                                         </div>
                                         <base-progress
                                                         type="danger"
-                                                        :value=6
+                                                        :value="((status.cpu * 100) | 0)"
                                                         size="lg">
                                                         <slot label>
                                                         </slot>
@@ -118,12 +122,12 @@
                                             <span>Arbeitsspeicher Auslastung</span>
                                             </div>
                                             <div class="progress-percentage">
-                                            <span>31%</span>
+                                            <span>( {{ (status.mem / 1024 / 1024).toFixed(0) }}MB von  {{ (status.maxmem / 1024 / 1024).toFixed(0) }}MB ) {{ (((status.mem / 1024 / 1024) / (status.maxmem / 1024 / 1024)) * 100).toFixed(0) }}%</span>
                                             </div>
                                         </div>
                                         <base-progress
                                                         type="primary"
-                                                        :value=31
+                                                        :value="Number((((status.mem / 1024 / 1024) / (status.maxmem / 1024 / 1024)) * 100).toFixed(0))"
                                                         size="lg">
                                                         <slot label>
                                                         </slot>
@@ -135,12 +139,12 @@
                                             <span>Festplatten Speicher</span>
                                             </div>
                                             <div class="progress-percentage">
-                                            <span>64%</span>
+                                           <span>( {{ (status.disk / 1024 / 1024 / 1024).toFixed(0) }}GB von  {{ vserver.disk }}GB ) {{ (((status.disk / 1024 / 1024) / (status.maxdisk / 1024 / 1024)) * 100).toFixed(0) }}%</span>
                                             </div>
                                         </div>
                                         <base-progress
                                                         type="warning"
-                                                        :value=64
+                                                        :value="(((status.disk / 1024 / 1024) / (status.maxdisk / 1024 / 1024)) * 100).toFixed(0)"
                                                         size="lg">
                                                         <slot label>
                                                         </slot>
@@ -321,6 +325,8 @@
 
 <script>
 import DashboardStats from '../../Layout/DashboardStats.vue';
+import VServerService from '../../../services/VServerService';
+import moment from 'moment'
 import { Tabs, Tab } from '@hiendv/vue-tabs'
 import { Table, TableColumn, DropdownMenu, DropdownItem, Dropdown} from 'element-ui'
 
@@ -331,7 +337,99 @@ export default {
       [Dropdown.name]: Dropdown,
       [DropdownItem.name]: DropdownItem,
       [DropdownMenu.name]: DropdownMenu, },
+    data() {
+      return {
+          vserver: null,
+          status: null,
+          networks: null,
+          password: '••••••••••••',
+          relativTime: 'Loading...',
+          loop: null,
+      };
+    },
+    created() {
+        VServerService.getServer(this.$route.params.id).then(response => {
+            this.vserver = response.vserver;
+            this.status = response.status;
+            this.networks = response.networks;
+            this.startLoop();
+        }).catch((error) => {
+            this.$awn.alert(error.response.data.response.message)
+            this.$router.push('/');
+        });
+    },
+    destroyed () {
+        clearInterval(this.loop);
+    },
+    methods: {
+        startLoop() {
+            this.getRelativeServerTime()            
+            this.loop = setTimeout(() => this.startLoop(), 1000)
+        },
+        showPassword() {
+            this.password = this.vserver.password;
+        },
+        hidePassword() {
+            this.password = '••••••••••••';
+        },
+        copyPassword() {  
+            let textArea = document.createElement("textarea");
+            textArea.value = this.vserver.password;
+            // make the textarea out of viewport
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((res, rej) => {
+                // here the magic happens
+                document.execCommand('copy') ? res() : rej();
+                textArea.remove();
+            });
+        },
+        copyIP() {  
+            let textArea = document.createElement("textarea");
+            textArea.value = this.networks[0].ip;
+            // make the textarea out of viewport
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((res, rej) => {
+                // here the magic happens
+                document.execCommand('copy') ? res() : rej();
+                textArea.remove();
+            });
+        },
+        getRelativeServerTime() {
+            var time = ((this.vserver.paidup - new Date().getTime()) / 1000).toFixed(0);
+            var stime = '';
+
+            var years = ((time / (86400 * 365)) | 0);
+            stime += years + "Y "
+            time = time - ((86400 * 365) * years);
+            var hours = ((time / 3600) | 0);
+            var days = ((time / 86400) | 0);
+            stime += days + "D "
+            time = time - (86400 * days);
+            var hours = ((time / 3600) | 0);
+            stime += hours + "H "
+            time = time - (3600 * hours);
+            var minutes = ((time / 60) | 0);
+            stime += minutes + "M "
+            time = time - (60 * minutes);
+            var seconds = (time | 0);
+            stime += seconds + "S"
+            time = time - seconds;
+
+            this.relativTime = stime;
+        },
+    },
     mounted: function() {
+        /*
         document.cookie="PVEAuthCookie=PVE:7367cd8e-710f-4451-9dc4-90881cf158b2@pve:6149F96B::v8qJKXQ+mWtKktcVwYPdGDKpIR6US/HHIBHF9RpC77uoGRYWaUiNB+8T+SITXCyHL3spmH4C6jHoqGUpf6m26/b8VvVNiBD9clXkLdvNG77WU8hW0dLUmy9Yqfs9JM1MWh+xtyku5oTd6JKdiSFCrl89xqeW97Pp10JRN6jmDKr4ybL9YqXBTiZNGSYPg/AUGqQZEZfXOPGji9Qblr65Af2EQrrGK0uEuDKYxZ+hQS+gCFf5yeknCT7pn4QQ7trYckhlLmQoMOt0V0QcNITitsSrJHJHQD4iwwB6blEjs801eus65bdvKqFheTgbOTR/aiz7od7uLe4I4ii4oI22Yw==;domain=local.shadehost.eu";
 
         var iframe = this.$refs.console
@@ -352,7 +450,7 @@ export default {
                 console.error('Request failed', this);
             }
             }
-        }
+        }*/
     }
 }
 </script>

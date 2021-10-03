@@ -100,6 +100,26 @@ const routes = [
         name: 'resetpassword',
         component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/ResetPassword.vue')
       },
+      {
+        path: '/agb',
+        name: 'agb',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/AGB.vue')
+      },
+      {
+        path: '/impressum',
+        name: 'impressum',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Impressum.vue')
+      },
+      {
+        path: '/datenschutz',
+        name: 'datenschutz',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Datenschutz.vue')
+      },
+      {
+        path: '/wiederruf',
+        name: 'wiederruf',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Wiederruf.vue')
+      },
       { path: '*', component: NotFound }
     ]
   }
