@@ -83,6 +83,7 @@
                             <select v-model="os" class="form-control">
                                 <option value="debian-11-standard_11.0-1_amd64.tar.gz">Debian-11</option>
                                 <option selected value="debian-10-standard_10.7-1_amd64.tar.gz">Debian-10</option>
+                                <option selected value="Debian-10.tar.gz">Debian-10 (OWN)</option>
                                 <option value="ubuntu-21.04-standard_21.04-1_amd64.tar.gz">Ubuntu-21.04</option>
                                 <option value="ubuntu-20.10-standard_20.10-1_amd64.tar.gz">Ubuntu-20.10</option>
                             </select>
@@ -133,7 +134,7 @@
             <card>
             <b-row align-v="center" style="height: 30px" slot="header" >
                 <b-col cols="10">
-                    <h3 class="mb-0">RootServer wird eingerichtet</h3>
+                    <h3 class="mb-0">VServer wird eingerichtet</h3>
                 </b-col>
             </b-row>
 
@@ -196,6 +197,7 @@ import { duration } from 'moment';
                 notifier.success(response.message);
                 this.selected = null;
                 this.order = true;
+                this.loop = setTimeout(() => this.$router.push('/products'), 15000)
             }, error => { 
                 notifier.alert(error.response.data.response.message) ;
                 this.orderloading = false;

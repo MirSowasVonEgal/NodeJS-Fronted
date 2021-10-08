@@ -5,6 +5,7 @@ function resolveSrc(_path) {
 }
 // vue.config.js
 module.exports = {
+  //publicPath: './',
   lintOnSave: false,
   configureWebpack: {
     devServer: {

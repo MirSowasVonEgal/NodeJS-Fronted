@@ -35,40 +35,14 @@
             </b-row>
             <div style="height: 357px; overflow: scroll; overflow-x: hidden;">
             <vue-timeline-update
-              dateString="13.09.2021 21:40"
-              title="Google login"
-              description="Jetzt kann man sich auch mit Google anmelden."
-              category="Neues"
+              v-for="row in news" :key="row._id"
+              :dateString="Number(row.created) | moment('DD.MM.YYYY, HH:mm')"
+              :title="row.title"
+              :description="row.message"
+              :category="row.tag"
               icon="code"
-              color="red"
+              :color="row.color"
              :date="new Date(1)"
-            />
-            <vue-timeline-update
-            dateString="12.09.2021 20:30"
-            title="Webinterface Release"
-            description="Das Webinterface wurde erfolgreich veröffentlicht."
-            category="Ankündigung"
-            icon="code"
-            color="blue"
-            :date="new Date(1)"
-            />
-            <vue-timeline-update
-            dateString="12.09.2021 20:30"
-            title="Webinterface Release"
-            description="Das Webinterface wurde erfolgreich veröffentlicht."
-            category="Ankündigung"
-            icon="code"
-            color="blue"
-            :date="new Date(1)"
-            />
-            <vue-timeline-update
-            dateString="12.09.2021 20:30"
-            title="Webinterface Release"
-            description="Das Webinterface wurde erfolgreich veröffentlicht."
-            category="Ankündigung"
-            icon="code"
-            color="blue"
-            :date="new Date(1)"
             />
             </div>
           </card>
@@ -81,12 +55,14 @@
 <script>
 import DashboardStats from './Layout/DashboardStats.vue';
 import AuthService from '../services/AuthService';
+import NewsService from '../services/NewsService';
 
   export default {
   components: { DashboardStats },
     data() {
        return {
-          notes: ''
+          notes: '',
+          news: {},
        }
     },
     methods: {
@@ -104,6 +80,9 @@ import AuthService from '../services/AuthService';
       if(this.$store.state.auth.user.notes) {
         this.notes = this.$store.state.auth.user.notes;
       }
+      NewsService.getNews().then(response => {
+        this.news = response.news.reverse();
+      })
     },
   };
 </script>

@@ -37,7 +37,9 @@ import router from './routes/router';
 Vue.component('VueElementLoading', VueElementLoading)
 Vue.use(DashboardPlugin);
 Vue.use(require('vue-moment'));
-Vue.use(VueAWN, { position: "top-right", labels: { success: "Erfolgreich", info: "Information", alert: "Fehler", async: "Wird geladen" }, durations: { global: 2000 } })
+Vue.use(VueAWN, { position: "top-right", labels: 
+  { success: "Erfolgreich", info: "Information", alert: "Fehler", async: "Wird geladen" }, 
+  durations: { global: 2000 }, replacements: { confirm: { "OK": "Ja" }, confirm: { "Cancel": "Abbrechen" } } })
 Vue.use(VueTimeLine, {
   // Specify the theme to use: dark or light (dark by default).
   theme: "light",
